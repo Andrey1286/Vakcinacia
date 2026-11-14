@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>План вакцинации — Приказ 1122н</title>
+<style>
+/* ============================================================
+   === BASE ===
+   ============================================================ */
+:root{
+  --bg:#f4f6f9; --card:#fff; --ink:#1b2430; --muted:#5b6b7d;
+  --line:#d7dee7; --accent:#1a6fc4; --accent-dark:#12528f;
+  --ok:#1e7d4f; --warn:#b87400; --danger:#b3261e;
+  --danger-bg:#fdecea; --warn-bg:#fff6e5; --ok-bg:#e8f5ee;
+  --info-bg:#eaf0f7;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.5; font-size:15px;
+}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+h1,h2,h3{line-height:1.25;margin:0 0 .5em}
+h1{font-size:1.55rem}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem}
+p{margin:.4em 0}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+header.top{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); padding:16px 18px; margin-bottom:14px;
+}
+header.top .doc-line{font-size:.85rem; color:var(--muted)}
+.disclaimer{
+  background:var(--warn-bg); border:1px solid #f0d9a8;
+  border-radius:var(--radius); padding:12px 14px; margin-bottom:14px;
+  font-size:.9rem;
+}
+
+.card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); padding:18px; margin-bottom:14px;
+}
+.progress{display:flex; gap:6px; margin-bottom:14px}
+.progress .seg{
+  flex:1; height:8px; border-radius:99px; background:#e3e8ef;
+  transition:background .25s;
+}
+.progress .seg.done{background:var(--accent)}
+.progress-labels{
+  display:flex; justify-content:space-between; font-size:.78rem;
+  color:var(--muted); margin:-8px 0 14px;
+}
+.step-title{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; flex-wrap:wrap; margin-bottom:14px;
+}
+.badge{
+  background:#eaf2fb; color:var(--accent-dark); border-radius:99px;
+  padding:3px 10px; font-size:.78rem; font-weight:600;
+}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}
+.badge.danger{background:var(--danger-bg);color:var(--danger)}
+.badge.info{background:var(--info-bg);color:#4c5f74}
+
+.field{margin-bottom:18px}
+.field > label.title, .field > .title{
+  display:block; font-weight:600; margin-bottom:6px;
+}
+.hint{font-size:.82rem; color:var(--muted); margin-top:4px}
+.err{color:var(--danger); font-size:.82rem; margin-top:4px; display:none}
+.field.invalid .err{display:block}
+
+.radio-row{display:flex; gap:16px; flex-wrap:wrap; margin-top:4px}
+.radio-row label{display:flex; align-items:center; gap:6px; cursor:pointer}
+input[type=radio], input[type=checkbox]{accent-color:var(--accent); cursor:pointer}
+
+.age-box{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.age-display{
+  font-size:1.6rem; font-weight:700; color:var(--accent-dark);
+  min-width:170px;
+}
+input[type=range]{width:100%; max-width:420px}
+input[type=number]{
+  width:110px; padding:6px 8px; border:1px solid var(--line);
+  border-radius:6px; font-size:.95rem;
+}
+input[type=text], select{
+  padding:7px 9px; border:1px solid var(--line); border-radius:6px;
+  font-size:.95rem; background:#fff; max-width:100%;
+}
+select{min-width:240px}
+.check-list{display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; margin-top:4px}
+.check-list label{display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:.93rem}
+.check-list input{margin-top:3px}
+@media(max-width:640px){.check-list{grid-template-columns:1fr}}
+
+.tip{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:#e3e8ef; color:var(--muted); font-size:.7rem;
+  font-weight:700; cursor:help; position:relative; margin-left:4px;
+  vertical-align:middle;
+}
+.tip:hover::after, .tip:focus::after{
+  content:attr(data-tip);
+  position:absolute; left:50%; bottom:130%;
+  transform:translateX(-50%);
+  background:#1b2430; color:#fff; padding:8px 10px; border-radius:6px;
+  font-size:.78rem; font-weight:400; width:260px; z-index:20;
+  white-space:normal; line-height:1.35;
+}
+
+.btn{
+  border:none; border-radius:8px; padding:10px 18px;
+  font-size:.95rem; font-weight:600; cursor:pointer;
+  transition:background .15s, transform .05s;
+}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent); color:#fff}
+.btn.primary:hover{background:var(--accent-dark)}
+.btn.primary:disabled{background:#a9bdd4; cursor:not-allowed}
+.btn.ghost{background:#eef2f7; color:var(--ink)}
+.btn.ghost:hover{background:#e2e8f0}
+.btn.danger{background:#fbe9e7; color:var(--danger)}
+.btn.danger:hover{background:#f6d6d2}
+.nav-row{
+  display:flex; justify-content:space-between; gap:10px;
+  margin-top:20px; flex-wrap:wrap;
+}
+.nav-row .right{display:flex; gap:10px; flex-wrap:wrap}
+
+.acc{border:1px solid var(--line); border-radius:8px; margin-bottom:8px; overflow:hidden}
+.acc-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:10px 14px; cursor:pointer; background:#f9fafc;
+  font-weight:600; font-size:.95rem; user-select:none;
+}
+.acc-head:hover{background:#f2f5f9}
+.acc-head .status-dot{
+  width:9px; height:9px; border-radius:50%; background:#cfd8e3; flex:none;
+}
+.acc-head.filled .status-dot{background:var(--ok)}
+.acc-body{padding:12px 14px; display:none; border-top:1px solid var(--line)}
+.acc.open .acc-body{display:block}
+.acc-body .field{margin-bottom:12px}
+.inline-fields{display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end}
+.inline-fields label{display:flex; flex-direction:column; gap:4px; font-size:.9rem}
+.inline-fields input{max-width:140px}
+
+.summary-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:8px 20px;
+  margin-bottom:14px; font-size:.92rem;
+}
+.summary-grid .k{color:var(--muted)}
+@media(max-width:640px){.summary-grid{grid-template-columns:1fr}}
+
+.warn-block{
+  border:2px solid var(--danger); background:var(--danger-bg);
+  border-radius:var(--radius); padding:14px 16px; margin-bottom:16px;
+}
+.warn-block h3{color:var(--danger); margin-bottom:8px}
+.warn-block ul{margin:0; padding-left:20px}
+
+.rec-section h2{margin-top:4px}
+.rec-list{display:flex; flex-direction:column; gap:10px}
+.rec{
+  border:1px solid var(--line); border-radius:8px; padding:12px 14px;
+  background:#fff;
+}
+.rec.rec-danger{border-left:5px solid var(--danger)}
+.rec.rec-warn{border-left:5px solid var(--warn)}
+.rec.rec-ok{border-left:5px solid var(--ok)}
+.rec.rec-info{border-left:5px solid #7a8ea6}
+.rec-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px}
+.rec-head .name{font-weight:700; font-size:1.02rem}
+.rec .why{font-size:.9rem; color:#33414f}
+.rec .src{font-size:.78rem; color:var(--muted); margin-top:4px}
+.rec .extra{font-size:.88rem; margin-top:6px}
+.rec .extra b{color:var(--accent-dark)}
+.rec .analysis{
+  background:var(--info-bg); border-radius:6px; padding:8px 10px;
+  margin-top:8px; font-size:.88rem;
+}
+.rec .analysis .a-title{
+  font-weight:700; color:#1a6fc4; display:block; margin-bottom:2px;
+}
+
+.roadmap{margin:6px 0 16px}
+.roadmap h2{margin-bottom:10px}
+.timeline{display:flex; flex-direction:column; gap:0; position:relative; margin-left:8px}
+.timeline::before{
+  content:""; position:absolute; left:14px; top:6px; bottom:6px;
+  width:2px; background:#dfe6ef;
+}
+.tl-item{display:flex; gap:14px; position:relative; padding:0 0 18px 0}
+.tl-dot{
+  flex:none; width:30px; height:30px; border-radius:50%;
+  background:var(--accent); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-size:.72rem;
+  font-weight:700; z-index:1; margin-top:2px;
+}
+.tl-item.now .tl-dot{background:var(--ok)}
+.tl-item.later .tl-dot{background:var(--accent)}
+.tl-item.far .tl-dot{background:#7a8ea6}
+.tl-body{flex:1; min-width:0}
+.tl-when{font-weight:700; font-size:.95rem; margin-bottom:4px}
+.tl-when .when-sub{font-weight:400; color:var(--muted); font-size:.82rem; margin-left:6px}
+.tl-list{margin:0; padding-left:18px; font-size:.9rem}
+.tl-list li{margin-bottom:3px}
+.tl-list .tag{
+  display:inline-block; font-size:.72rem; font-weight:700;
+  padding:1px 7px; border-radius:99px; margin-right:6px;
+  vertical-align:1px;
+}
+.tag.tag-danger{background:var(--danger-bg);color:var(--danger)}
+.tag.tag-warn{background:var(--warn-bg);color:var(--warn)}
+.tag.tag-ok{background:var(--ok-bg);color:var(--ok)}
+.tag.tag-info{background:var(--info-bg);color:#4c5f74}
+
+.tests-block{
+  margin-top:10px; border:1px dashed #b9c9dc; border-radius:var(--radius);
+  padding:12px 14px; background:#fbfdff;
+}
+.tests-block h3{color:#1a6fc4; margin-bottom:6px; font-size:.95rem}
+.tests-block ul{margin:0; padding-left:18px; font-size:.9rem}
+.tests-block .small{margin-top:6px}
+
+.legend{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:8px 0 4px}
+.legend div{font-size:.88rem; padding:8px 10px; border-radius:8px}
+.legend .l-ok{background:var(--ok-bg)}
+.legend .l-warn{background:var(--warn-bg)}
+.legend .l-danger{background:var(--danger-bg)}
+@media(max-width:700px){.legend{grid-template-columns:1fr}}
+
+#printPlan{display:none}
+
+@media print{
+  @page{size:A4; margin:1.6cm}
+  body{background:#fff; font-size:10.5pt; color:#000}
+  .wrap, header.top, .disclaimer, #app{display:none !important}
+  #printPlan{display:block !important}
+  #printPlan h1{font-size:17pt; text-align:center; margin:0 0 2mm}
+  #printPlan h2{font-size:12.5pt; border-bottom:1.5px solid #000; padding-bottom:1mm; margin:5mm 0 2mm}
+  #printPlan .p-header{font-size:9pt; text-align:center; margin-bottom:3mm}
+  #printPlan table{width:100%; border-collapse:collapse; margin:2mm 0 4mm; font-size:9.5pt}
+  #printPlan th, #printPlan td{border:1px solid #000; padding:1.6mm 2mm; vertical-align:top; text-align:left}
+  #printPlan th{background:#f0f0f0; font-weight:700}
+  #printPlan .p-danger{font-weight:700}
+  #printPlan .p-block{page-break-inside:avoid}
+  #printPlan ul{margin:1mm 0; padding-left:5mm}
+  #printPlan .p-note{font-size:8.5pt; color:#333; margin-top:1mm}
+  #printPlan .sig{margin-top:10mm; display:flex; justify-content:space-between; font-size:10pt}
+  #printPlan .lines{margin-top:3mm; border-bottom:1px solid #000; height:6mm}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <h1>План вакцинации — персональный сервис</h1>
+    <p class="doc-line">
+      Основа: <b>Приказ Минздрава России от 06.12.2021 № 1122н</b>
+      (ред. от 12.12.2023) «Об утверждении национального календаря
+      профилактических прививок…». Актуальность: <b>15.05.2026</b>.
+    </p>
+  </header>
+
+  <div class="disclaimer">
+    ⚠ <b>Важно.</b> Сервис носит информационный характер и не заменяет
+    консультацию врача. Перед вакцинацией необходима консультация
+    специалиста. Все данные обрабатываются локально в вашем браузере —
+    ничего не отправляется на сервер.
+  </div>
+
+  <main id="app">
+    <div id="wizard">
+      <div class="progress" aria-hidden="true">
+        <div class="seg" data-seg="1"></div>
+        <div class="seg" data-seg="2"></div>
+        <div class="seg" data-seg="3"></div>
+        <div class="seg" data-seg="4"></div>
+      </div>
+      <div class="progress-labels">
+        <span>1. Общие данные</span><span>2. Здоровье</span>
+        <span>3. Анамнез</span><span>4. Результат</span>
+      </div>
+
+      <!-- STEP 1 -->
+      <section class="card step" data-step="1">
+        <div class="step-title">
+          <h2>Шаг 1 — Общие данные</h2>
+        </div>
+
+        <div class="field" id="f-sex">
+          <span class="title">Пол</span>
+          <div class="radio-row">
+            <label><input type="radio" name="sex" value="male"> Мужчина</label>
+            <label><input type="radio" name="sex" value="female"> Женщина</label>
+          </div>
+        </div>
+
+        <div class="field" id="f-female" style="display:none">
+          <span class="title">Статус (для женщин)</span>
+          <div class="radio-row">
+            <label><input type="radio" name="femaleStatus" value="pregnant"> Беременна</label>
+            <label><input type="radio" name="femaleStatus" value="lactation"> Лактация</label>
+            <label><input type="radio" name="femaleStatus" value="none"> Не беременна, не кормлю</label>
+          </div>
+        </div>
+
+        <div class="field" id="f-pregnancy" style="display:none">
+          <span class="title">
+            Срок беременности
+            <span class="tip" data-tip="Для вакцины Адасель оптимально вводить в 27–36 недель беременности. Грипп — со 2–3 триместра.">?</span>
+          </span>
+          <div class="radio-row" style="margin-bottom:8px">
+            <label><input type="radio" name="trimester" value="1"> 1 триместр (1–13 нед.)</label>
+            <label><input type="radio" name="trimester" value="2"> 2 триместр (14–26 нед.)</label>
+            <label><input type="radio" name="trimester" value="3"> 3 триместр (27–40 нед.)</label>
+          </div>
+          <div class="inline-fields">
+            <label>Точный срок, недель
+              <input type="number" id="pregWeek" min="1" max="42" placeholder="например, 30" style="width:180px">
+            </label>
+          </div>
+          <div class="hint" id="pregHint"></div>
+        </div>
+
+        <div class="field" id="f-age">
+          <span class="title">Возраст</span>
+          <div class="age-box">
+            <div class="age-display" id="ageDisplay">Возраст: 30 лет</div>
+            <input type="range" id="ageRange" min="0" max="120" step="1" value="30">
+            <input type="number" id="ageNumber" min="0" max="120" step="1" value="30" aria-label="Возраст числом">
+          </div>
+          <div class="hint">Ползунок — основной способ ввода. Числовое поле — для точного значения.</div>
+        </div>
+
+        <div class="field" id="f-region">
+          <label class="title" for="regionSelect">Регион проживания</label>
+          <select id="regionSelect">
+            <option value="">— выберите регион —</option>
+          </select>
+          <div class="hint" id="regionEndemicHint"></div>
+        </div>
+
+        <div class="field" id="f-profession">
+          <label class="title" for="professionSelect">Профессия (группа риска)</label>
+          <select id="professionSelect">
+            <option value="">— выберите группу —</option>
+          </select>
+        </div>
+
+        <div class="field" id="f-travel">
+          <label class="title">
+            <input type="checkbox" id="travelCheck"> Планирую поездки
+          </label>
+          <div class="hint">Без указания конкретной страны/даты — только справочный блок.</div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn danger" data-reset>Сбросить всё</button>
+          <div class="right">
+            <button class="btn primary" id="next1" disabled>Далее</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="card step" data-step="2" style="display:none">
+        <div class="step-title">
+          <h2>Шаг 2 — Здоровье</h2>
+        </div>
+
+        <div class="field" id="f-chronic">
+          <span class="title">Хронические заболевания</span>
+          <div class="check-list" id="chronicList"></div>
+        </div>
+
+        <div class="field" id="f-immuno">
+          <label class="title">Иммунодефицит (кроме ВИЧ)</label>
+          <label><input type="checkbox" id="immunoCheck"> Есть иммунодефицит / иммуносупрессия</label>
+        </div>
+
+        <div class="field" id="f-onco">
+          <label><input type="checkbox" id="oncoCheck"> Онкология / химиотерапия / лучевая терапия</label>
+        </div>
+
+        <div class="field" id="f-splen">
+          <span class="title">Спленэктомия (удалена селезёнка)</span>
+          <div class="radio-row">
+            <label><input type="radio" name="splen" value="yes"> Да</label>
+            <label><input type="radio" name="splen" value="no"> Нет</label>
+          </div>
+        </div>
+
+        <div class="field" id="f-smoke">
+          <span class="title">Курение</span>
+          <div class="radio-row">
+            <label><input type="radio" name="smoke" value="yes"> Да</label>
+            <label><input type="radio" name="smoke" value="no"> Нет</label>
+          </div>
+        </div>
+
+        <div class="field" id="f-allergy">
+          <span class="title">Аллергоанамнез</span>
+          <div class="check-list" id="allergyList"></div>
+        </div>
+
+        <div class="field" id="f-exac">
+          <span class="title">Обострение хронического заболевания сейчас</span>
+          <div class="radio-row">
+            <label><input type="radio" name="exac" value="yes"> Да</label>
+            <label><input type="radio" name="exac" value="no"> Нет</label>
+          </div>
+        </div>
+
+        <div class="field" id="f-acute">
+          <span class="title">Острая инфекция / температура сейчас</span>
+          <div class="radio-row">
+            <label><input type="radio" name="acute" value="yes"> Да</label>
+            <label><input type="radio" name="acute" value="no"> Нет</label>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn ghost" data-back="1">Назад</button>
+          <div class="right">
+            <button class="btn danger" data-reset>Сбросить всё</button>
+            <button class="btn primary" id="next2" disabled>Далее</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="card step" data-step="3" style="display:none">
+        <div class="step-title">
+          <h2>Шаг 3 — Вакцинальный анамнез</h2>
+        </div>
+        <p class="muted small">
+          По умолчанию выбрано «Не помню» — при необходимости измените статус.
+          Если не помните — сервис подскажет, какой анализ сдать.
+        </p>
+        <div id="historyList"></div>
+
+        <div class="nav-row">
+          <button class="btn ghost" data-back="2">Назад</button>
+          <div class="right">
+            <button class="btn ghost" id="reset3">Сбросить шаг</button>
+            <button class="btn danger" data-reset>Сбросить всё</button>
+            <button class="btn primary" id="next3">Рассчитать план</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4 -->
+      <section class="card step" data-step="4" style="display:none">
+        <div class="step-title">
+          <h2>Шаг 4 — Результат</h2>
+          <span class="badge ok" id="resultBadge">Готово</span>
+        </div>
+
+        <div id="warnBlock"></div>
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div class="roadmap" id="roadmapBlock"></div>
+        <div class="rec-section" id="recSection"></div>
+        <div id="testsBlock"></div>
+        <div id="travelBlock"></div>
+
+        <div class="disclaimer" style="margin-top:16px">
+          ⚠ Результат носит информационный характер и не заменяет
+          консультацию врача. Перед вакцинацией обязательна консультация
+          специалиста.
+        </div>
+
+        <div class="nav-row">
+          <button class="btn ghost" data-back="1">Назад к общим данным</button>
+          <div class="right">
+            <button class="btn ghost" data-back="2">К здоровью</button>
+            <button class="btn ghost" data-back="3">К анамнезу</button>
+            <button class="btn danger" data-reset>Сбросить всё</button>
+            <button class="btn primary" id="printBtn">Скачать план (PDF)/Распечатать</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Как читать результат</h2>
+      <div class="legend">
+        <div class="l-ok"><b>Планово</b> — вакцинация по возрасту/календарю, без срочности.</div>
+        <div class="l-warn"><b>Рекомендуется</b> — по эпидпоказаниям, группе риска или состоянию.</div>
+        <div class="l-danger"><b>Противопоказано / обсудить с врачом</b> — временно или постоянно нельзя либо требуется индивидуальная оценка.</div>
+      </div>
+      <p class="small muted">
+        <b>Про антитела.</b> Если вы не помните, болели ли вы или были ли привиты,
+        сервис вместо вакцинации рекомендует сдать анализ: для гепатита В — anti-HBs (HBsAg);
+        для кори/краснухи/паротита — IgG к каждому возбудителю; для клещевого энцефалита —
+        IgG к ВКЭ; для ветряной оспы — IgG к VZV. По результатам врач решит,
+        нужна ли прививка. Пневмококк — без анализа, по возрасту/риску.
+      </p>
+      <p class="small muted">
+        <b>Адасель / АДС-М.</b> АДС-М защищает от дифтерии и столбняка, но
+        <b>не от коклюша</b>. Поэтому при беременности рекомендуется именно
+        <b>Адасель</b> (дифтерия, столбняк, коклюш) — однократно на сроке
+        27–36 недель при каждой беременности. Вне беременности — плановая
+        ревакцинация АДС-М каждые 10 лет.
+      </p>
+      <p class="small muted">
+        Живые вакцины (корь, краснуха, паротит, ветряная оспа, БЦЖ) нельзя при
+        беременности и при выраженной иммуносупрессии. При беременности план
+        ограничен: разрешены Адасель (27–36 нед.) и грипп (2–3 триместр),
+        остальное — «по усмотрению врача» или «противопоказано».
+        Для гриппа и COVID-19 вариант «Переболел(а)» не запрашивается — перенесённая
+        инфекция не исключает вакцинацию в следующем сезоне.
+      </p>
+    </section>
+  </main>
+</div>
+
+<div id="printPlan" aria-hidden="true"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   === DATA ===
+   ============================================================ */
+const ORDER = {
+  number: "1122н",
+  date: "06.12.2021",
+  revision: "12.12.2023",
+  actual: "15.05.2026",
+  title: "Приказ Минздрава России от 06.12.2021 № 1122н (ред. от 12.12.2023)"
+};
+
+const NO_HAD_DISEASE_IDS = ["flu", "covid19"];
+
+const REGIONS = [
+  {id:"moscow", name:"Москва", endemicKE:false},
+  {id:"spb", name:"Санкт-Петербург", endemicKE:false},
+  {id:"moscow_obl", name:"Московская область", endemicKE:false},
+  {id:"leningrad_obl", name:"Ленинградская область", endemicKE:true},
+  {id:"kemerovo", name:"Кемеровская область", endemicKE:true},
+  {id:"novosibirsk", name:"Новосибирская область", endemicKE:true},
+  {id:"tomsk", name:"Томская область", endemicKE:true},
+  {id:"irkutsk", name:"Иркутская область", endemicKE:true},
+  {id:"krasnoyarsk", name:"Красноярский край", endemicKE:true},
+  {id:"altai", name:"Алтайский край", endemicKE:true},
+  {id:"altai_rep", name:"Республика Алтай", endemicKE:true},
+  {id:"sverdlovsk", name:"Свердловская область", endemicKE:true},
+  {id:"chelyabinsk", name:"Челябинская область", endemicKE:true},
+  {id:"perm", name:"Пермский край", endemicKE:true},
+  {id:"kirov", name:"Кировская область", endemicKE:true},
+  {id:"komi", name:"Республика Коми", endemicKE:true},
+  {id:"karelia", name:"Республика Карелия", endemicKE:true},
+  {id:"vologda", name:"Вологодская область", endemicKE:true},
+  {id:"arkhangelsk", name:"Архангельская область", endemicKE:true},
+  {id:"tyumen", name:"Тюменская область", endemicKE:true},
+  {id:"omsk", name:"Омская область", endemicKE:true},
+  {id:"khabarovsk", name:"Хабаровский край", endemicKE:true},
+  {id:"primorsky", name:"Приморский край", endemicKE:true},
+  {id:"sakhalin", name:"Сахалинская область", endemicKE:true},
+  {id:"buryatia", name:"Республика Бурятия", endemicKE:true},
+  {id:"zabaykalsky", name:"Забайкальский край", endemicKE:true},
+  {id:"tatarstan", name:"Республика Татарстан", endemicKE:true},
+  {id:"bashkortostan", name:"Республика Башкортостан", endemicKE:true},
+  {id:"udmurtia", name:"Удмуртская Республика", endemicKE:true},
+  {id:"other", name:"Другой регион", endemicKE:false}
+];
+
+const PROFESSIONS = [
+  {id:"medical", name:"Медицинские работники"},
+  {id:"education", name:"Образование (школы, вузы, ДОУ)"},
+  {id:"trade", name:"Торговля"},
+  {id:"transport", name:"Транспорт"},
+  {id:"communal", name:"Коммунальная сфера"},
+  {id:"food", name:"Пищевая промышленность"},
+  {id:"agriculture", name:"Сельское хозяйство"},
+  {id:"forestry", name:"Лесозаготовка / охота / лесники"},
+  {id:"live_cultures", name:"Работа с живыми культурами возбудителей"},
+  {id:"military", name:"Военнослужащие / призывники"},
+  {id:"social", name:"Социальное обслуживание / МФЦ"},
+  {id:"law_enforcement", name:"Правоохранительные органы, пункты пропуска"},
+  {id:"other", name:"Другое"}
+];
+
+const CHRONIC = [
+  {id:"asthma_copd", name:"БА / ХОБЛ"},
+  {id:"hiv", name:"ВИЧ"},
+  {id:"hepatitis_bc", name:"Хронические гепатиты B/C"},
+  {id:"kidney", name:"Заболевания почек / диализ"},
+  {id:"heart", name:"Заболевания сердца (ХСН и др.)"},
+  {id:"diabetes", name:"Сахарный диабет"}
+];
+
+const ALLERGENS = [
+  {id:"none", name:"Не было аллергических реакций", exclusive:true},
+  {id:"egg", name:"Анафилаксия на яичный белок"},
+  {id:"gelatin", name:"Анафилаксия на желатин"},
+  {id:"aminoglycosides", name:"Анафилаксия на аминогликозиды"},
+  {id:"yeast", name:"Анафилаксия на дрожжи (для гепатита В)"},
+  {id:"severe_prev", name:"Тяжёлая реакция на предыдущую дозу любой вакцины (t > 40 °C, отёк, судороги)"}
+];
+
+const VACCINE_RULES = [
+  {
+    id:"diphtheria_tetanus_pertussis",
+    name:"Адасель (дифтерия, столбняк, коклюш) / АДС-М (дифтерия, столбняк)",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"weeks27-36", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["medical","education","trade","transport","communal","social"],
+    intervalYears:10,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 1, п. 15",
+    testIfUnknown:null,
+    notes:"Планово: АДС-М каждые 10 лет — защита от дифтерии и столбняка (без коклюша). При беременности: Адасель однократно в 27–36 недель — защита от дифтерии, столбняка и коклюша (АДС-М при беременности не используется, т.к. не защищает от коклюша)."
+  },
+  {
+    id:"flu",
+    name:"Грипп",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"trimester2+", lactationAllowed:true,
+    contraindications:["egg","severe_prev"],
+    riskGroups:[],
+    intervalYears:1,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 1, п. 19",
+    testIfUnknown:null,
+    notes:"Инактивированная вакцина. Рекомендуется всем взрослым и детям при отсутствии острого заболевания/обострения. Беременным — со 2–3 триместра."
+  },
+  {
+    id:"covid19",
+    name:"COVID-19 (SARS-CoV-2)",
+    minAge:18, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["medical","education","trade","transport","communal","social"],
+    intervalYears:1,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 2, п. 24 (в ред. Приказа от 12.12.2023 № 677н)",
+    testIfUnknown:null,
+    notes:"Инактивированная вакцина. Рекомендуется лицам старше 18 лет, не болевшим и/или не привитым; 60+; при хронических заболеваниях, иммунодефицитах, онкологии."
+  },
+  {
+    id:"hepatitis_b",
+    name:"Вирусный гепатит В",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["yeast","severe_prev"],
+    riskGroups:["medical","food","communal","social"],
+    intervalYears:null,
+    dosesIfNaive:3,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}, {afterWeeks:26, dose:"3-я доза (через 6 мес от 1-й)"}]},
+    source:"Приложение 1, п. 16; Приложение 2, п. 16; Приложение 3, п. 11",
+    testIfUnknown:"anti-HBs (HBsAg)",
+    notes:"Схема 0-1-6. При анафилаксии на дрожжи — рекомбинантная дрожжевая вакцина противопоказана."
+  },
+  {
+    id:"measles",
+    name:"Корь",
+    minAge:0, maxAge:120, isLive:true,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["gelatin","severe_prev"],
+    riskGroups:["medical","education","trade","transport","communal","social","law_enforcement"],
+    intervalYears:null,
+    dosesIfNaive:2,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}]},
+    source:"Приложение 1, п. 18; Приложение 2, п. 15",
+    testIfUnknown:"IgG к кори",
+    notes:"Живая вакцина. Противопоказана при беременности и иммуносупрессии."
+  },
+  {
+    id:"rubella",
+    name:"Краснуха",
+    minAge:0, maxAge:120, isLive:true,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["gelatin","severe_prev"],
+    riskGroups:["medical","education","trade","transport","communal","social"],
+    intervalYears:null,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 1, п. 17",
+    testIfUnknown:"IgG к краснухе",
+    notes:"Живая вакцина. Противопоказана при беременности."
+  },
+  {
+    id:"mumps",
+    name:"Паротит",
+    minAge:0, maxAge:120, isLive:true,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["gelatin","severe_prev"],
+    riskGroups:["medical","education","trade","transport","communal","social"],
+    intervalYears:null,
+    dosesIfNaive:2,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}]},
+    source:"Приложение 2, п. 18",
+    testIfUnknown:"IgG к паротиту",
+    notes:"Живая вакцина. Противопоказана при беременности."
+  },
+  {
+    id:"varicella",
+    name:"Ветряная оспа",
+    minAge:0, maxAge:120, isLive:true,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["gelatin","severe_prev"],
+    riskGroups:["military"],
+    intervalYears:null,
+    dosesIfNaive:2,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}]},
+    source:"Приложение 2, п. 22",
+    testIfUnknown:"IgG к VZV",
+    notes:"Живая вакцина. Противопоказана при беременности и иммуносупрессии."
+  },
+  {
+    id:"pneumococcus",
+    name:"Пневмококк (ПКВ13 / ППВ23)",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["medical","military"],
+    intervalYears:null,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 1, п. 9; Приложение 2, п. 20",
+    testIfUnknown:null,
+    notes:"Дети 2–5 лет, взрослые групп риска. При спленэктомии, ХОБЛ, диабете, ХСН, ВИЧ, диализе — рекомендуется."
+  },
+  {
+    id:"meningococcus",
+    name:"Менингококк (ACWY / MenB)",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["military"],
+    intervalYears:null,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 2, п. 14",
+    testIfUnknown:null,
+    notes:"В очагах, эндемичных регионах; при спленэктомии, иммунодефиците, ВИЧ — рекомендуется."
+  },
+  {
+    id:"hepatitis_a",
+    name:"Гепатит А",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["medical","food","communal","social"],
+    intervalYears:null,
+    dosesIfNaive:2,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:26, dose:"2-я доза (через 6–12 мес)"}]},
+    source:"Приложение 2, п. 12",
+    testIfUnknown:null,
+    notes:"Медики, пищевая промышленность, коммунальщики; при хронических гепатитах B/C — по показаниям."
+  },
+  {
+    id:"tick_encephalitis",
+    name:"Клещевой энцефалит",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["forestry","agriculture","live_cultures"],
+    intervalYears:3,
+    dosesIfNaive:3,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}, {afterWeeks:26, dose:"3-я доза (через 6–12 мес)"}]},
+    source:"Приложение 2, п. 7",
+    testIfUnknown:"IgG к ВКЭ",
+    notes:"Эндемичные регионы; лесозаготовка, сельхоз, охота. Ревакцинация — каждые 3 года."
+  },
+  {
+    id:"hib",
+    name:"Hib (гемофильная инфекция типа b)",
+    minAge:0, maxAge:120, isLive:false,
+    pregnancyAllowed:"yes", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:["medical"],
+    intervalYears:null,
+    dosesIfNaive:3,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1 мес)"}, {afterWeeks:8, dose:"3-я доза (через 2 мес)"}]},
+    source:"Приложение 1, п. 5–8; Приложение 2, п. 23",
+    testIfUnknown:null,
+    notes:"Дети, не привитые на первом году; при спленэктомии, иммунодефиците, ВИЧ — рекомендуется."
+  },
+  {
+    id:"hpv",
+    name:"ВПЧ",
+    minAge:9, maxAge:45, isLive:false,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:[],
+    intervalYears:null,
+    dosesIfNaive:3,
+    schedule:{firstWeek:0, repeats:[{afterWeeks:4, dose:"2-я доза (через 1–2 мес)"}, {afterWeeks:26, dose:"3-я доза (через 6 мес)"}]},
+    source:"Уточнить по приказу",
+    testIfUnknown:null,
+    notes:"В приказе 1122н как календарная позиция для взрослых не выделена; уточнить по приказу."
+  },
+  {
+    id:"bcg",
+    name:"БЦЖ (туберкулёз)",
+    minAge:0, maxAge:7, isLive:true,
+    pregnancyAllowed:"no", lactationAllowed:true,
+    contraindications:["severe_prev"],
+    riskGroups:[],
+    intervalYears:null,
+    dosesIfNaive:1,
+    schedule:{firstWeek:0, repeats:[]},
+    source:"Приложение 1, п. 13; Приложение 3, п. 10",
+    testIfUnknown:null,
+    notes:"Новорождённым на 3–7 день; ревакцинация 6–7 лет. Взрослым не проводится."
+  }
+];
+
+const TRAVEL_RECOMMENDATIONS = [
+  {
+    region:"Страны Африки и Южной Америки (тропический пояс)",
+    vaccines:["Жёлтая лихорадка","Гепатит А","Брюшной тиф"],
+    note:"Уточните актуальный список у врача / на сайте Роспотребнадзора."
+  },
+  {
+    region:"Юго-Восточная Азия",
+    vaccines:["Гепатит А","Брюшной тиф","Бешенство"],
+    note:"Уточните актуальный список у врача / на сайте Роспотребнадзора."
+  },
+  {
+    region:"Эндемичные по КЭ регионы РФ и сопредельные страны",
+    vaccines:["Клещевой энцефалит"],
+    note:"Уточните актуальный список у врача / на сайте Роспотребнадзора."
+  },
+  {
+    region:"Страны с высоким риском менингококка (пояс менингита в Африке)",
+    vaccines:["Менингококковая вакцина"],
+    note:"Уточните актуальный список у врача / на сайте Роспотребнадзора."
+  }
+];
+
+/* ============================================================
+   === STATE ===
+   ============================================================ */
+function makeDefaultState(){
+  return {
+    step:1,
+    sex:null,
+    femaleStatus:null,
+    trimester:null,
+    pregWeek:null,
+    age:30,
+    region:null,
+    profession:null,
+    travel:false,
+    chronic:[],
+    immuno:false,
+    onco:false,
+    splen:null,
+    smoke:null,
+    allergy:[],
+    exac:null,
+    acute:null,
+    history:{},
+    result:null
+  };
+}
+
+function ensureHistory(){
+  if(!state.history) state.history = {};
+  VACCINE_RULES.forEach(v=>{
+    if(!state.history[v.id] || !state.history[v.id].status){
+      state.history[v.id] = {status:"unknown"};
+    }
+    if(NO_HAD_DISEASE_IDS.includes(v.id) && state.history[v.id].status === "had_disease"){
+      state.history[v.id] = {status:"unknown"};
+    }
+  });
+}
+
+let state = makeDefaultState();
+ensureHistory();
+
+/* ============================================================
+   === UI HELPERS ===
+   ============================================================ */
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const el = (tag, cls, html) => { const n=document.createElement(tag); if(cls)n.className=cls; if(html!=null)n.innerHTML=html; return n; };
+const pl = (n, one, few, many) => {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b > 1 && b < 5) return few;
+  if (b === 1) return one;
+  return many;
+};
+const hasAllergy = id => state.allergy.includes(id);
+
+const isFemale = () => state.sex === "female";
+const vaccinatedWord = () => isFemale() ? "Привита" : "Привит";
+const notVaccinatedWord = () => isFemale() ? "Не привита" : "Не привит";
+const hadDiseaseWord = () => isFemale() ? "Переболела" : "Переболел";
+
+/* ============================================================
+   === INIT UI ===
+   ============================================================ */
+function init(){
+  try{
+    try{ localStorage.removeItem("vaccinePlan1122n"); }catch(e){}
+
+    renderRegions();
+    renderProfessions();
+    renderChronic();
+    renderAllergies();
+    renderHistory();
+    bindGlobal();
+    ensureHistory();
+    syncHistoryRadios();
+    updateStep();
+    runSelfTests();
+  }catch(e){
+    console.error("Init error:", e);
+    alert("Ошибка инициализации. Смотрите консоль.");
+  }
+}
+
+function renderRegions(){
+  const s = $("#regionSelect");
+  REGIONS.forEach(r=>{
+    const o = document.createElement("option");
+    o.value = r.id;
+    o.textContent = r.name + (r.endemicKE ? " — эндемичный по клещевому энцефалиту" : "");
+    s.appendChild(o);
+  });
+  s.addEventListener("change", ()=>{
+    state.region = s.value || null;
+    const reg = REGIONS.find(r=>r.id===s.value);
+    $("#regionEndemicHint").textContent = reg && reg.endemicKE
+      ? "Регион отмечен как эндемичный по клещевому энцефалиту — вакцинация против КЭ по эпидпоказаниям."
+      : "";
+    updateStep1();
+  });
+}
+
+function renderProfessions(){
+  const s = $("#professionSelect");
+  PROFESSIONS.forEach(p=>{
+    const o = document.createElement("option");
+    o.value = p.id; o.textContent = p.name;
+    s.appendChild(o);
+  });
+  s.addEventListener("change", ()=>{
+    state.profession = s.value || null;
+    updateStep1();
+  });
+}
+
+function renderChronic(){
+  const box = $("#chronicList");
+  CHRONIC.forEach(c=>{
+    const lab = document.createElement("label");
+    lab.innerHTML = `<input type="checkbox" value="${c.id}"> ${c.name}`;
+    lab.querySelector("input").addEventListener("change", e=>{
+      if(e.target.checked) state.chronic.push(c.id);
+      else state.chronic = state.chronic.filter(x=>x!==c.id);
+      updateStep2();
+    });
+    box.appendChild(lab);
+  });
+}
+
+function renderAllergies(){
+  const box = $("#allergyList");
+  ALLERGENS.forEach(a=>{
+    const lab = document.createElement("label");
+    lab.innerHTML = `<input type="checkbox" value="${a.id}"> ${a.name}`;
+    const cb = lab.querySelector("input");
+    cb.addEventListener("change", e=>{
+      const id = a.id;
+      if(a.exclusive){
+        if(e.target.checked){
+          state.allergy = ["none"];
+          $$("#allergyList input").forEach(other=>{ if(other!==cb) other.checked=false; });
+        }else{
+          state.allergy = state.allergy.filter(x=>x!=="none");
+        }
+      }else{
+        if(e.target.checked){
+          state.allergy = state.allergy.filter(x=>x!=="none");
+          const noneCb = document.querySelector('#allergyList input[value="none"]');
+          if(noneCb) noneCb.checked = false;
+          state.allergy.push(id);
+        }else{
+          state.allergy = state.allergy.filter(x=>x!==id);
+        }
+      }
+      updateStep2();
+    });
+    box.appendChild(lab);
+  });
+}
+
+const STATUS_OPTIONS = [
+  {id:"vaccinated", label:"Привит(а)"},
+  {id:"not_vaccinated", label:"Не привит(а)"},
+  {id:"had_disease", label:"Переболел(а)"},
+  {id:"unknown", label:"Не помню"}
+];
+
+function statusOptionsFor(v){
+  if(NO_HAD_DISEASE_IDS.includes(v.id)){
+    return STATUS_OPTIONS.filter(o=> o.id !== "had_disease");
+  }
+  return STATUS_OPTIONS;
+}
+
+function renderHistory(){
+  const box = $("#historyList");
+  box.innerHTML = "";
+  VACCINE_RULES.forEach(v=>{
+    const wrap = el("div","acc");
+    wrap.dataset.vid = v.id;
+    const head = el("div","acc-head");
+    head.innerHTML = `<span>${v.name}</span><span class="status-dot"></span>`;
+    head.addEventListener("click", ()=> wrap.classList.toggle("open"));
+    head.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();wrap.classList.toggle("open");} });
+    head.tabIndex = 0;
+
+    const body = el("div","acc-body");
+    statusOptionsFor(v).forEach(opt=>{
+      const lab = el("label");
+      lab.style.display = "block";
+      lab.style.margin = "4px 0";
+      lab.innerHTML = `<input type="radio" name="st_${v.id}" value="${opt.id}"> ${opt.label}`;
+      lab.querySelector("input").addEventListener("change", e=>{
+        state.history[v.id] = state.history[v.id] || {};
+        state.history[v.id].status = e.target.value;
+        if(e.target.value !== "vaccinated"){ delete state.history[v.id].year; delete state.history[v.id].month; }
+        if(e.target.value !== "had_disease"){ delete state.history[v.id].yearDisease; }
+        renderHistoryExtra(v, body, wrap);
+        updateStep3();
+      });
+      body.appendChild(lab);
+    });
+
+    const extra = el("div","extra-fields");
+    body.appendChild(extra);
+    wrap.appendChild(head);
+    wrap.appendChild(body);
+    box.appendChild(wrap);
+    renderHistoryExtra(v, body, wrap);
+  });
+  syncHistoryRadios();
+}
+
+function syncHistoryRadios(){
+  VACCINE_RULES.forEach(v=>{
+    const rec = state.history[v.id];
+    if(!rec || !rec.status) return;
+    const radio = document.querySelector(`input[name="st_${v.id}"][value="${rec.status}"]`);
+    if(radio) radio.checked = true;
+    const wrap = document.querySelector(`.acc[data-vid="${v.id}"]`);
+    if(wrap){
+      const body = wrap.querySelector(".acc-body");
+      renderHistoryExtra(v, body, wrap);
+    }
+  });
+}
+
+function renderHistoryExtra(v, body, wrap){
+  const extra = body.querySelector(".extra-fields");
+  extra.innerHTML = "";
+  const rec = state.history[v.id];
+  if(!rec || !rec.status) { wrap.classList.remove("filled"); return; }
+  wrap.classList.add("filled");
+
+  if(rec.status === "vaccinated"){
+    const f = el("div","field inline-fields");
+    f.innerHTML = `
+      <label>Год: <input type="number" min="1900" max="${new Date().getFullYear()}" value="${rec.year||""}" class="h-year" placeholder="ГГГГ"></label>
+      <label>Месяц (если помните): <input type="number" min="1" max="12" value="${rec.month||""}" class="h-month" placeholder="1–12"></label>`;
+    extra.appendChild(f);
+    f.querySelector(".h-year").addEventListener("input", e=>{
+      const val = e.target.value ? parseInt(e.target.value,10) : null;
+      if(val!==null && (val<1900 || val>new Date().getFullYear())) { e.target.style.outline="2px solid var(--danger)"; return; }
+      e.target.style.outline="";
+      state.history[v.id].year = val;
+      updateStep3();
+    });
+    f.querySelector(".h-month").addEventListener("input", e=>{
+      const val = e.target.value ? parseInt(e.target.value,10) : null;
+      state.history[v.id].month = val;
+    });
+  }
+  if(rec.status === "had_disease" && v.id !== "varicella"){
+    const f = el("div","field inline-fields");
+    f.innerHTML = `<label>Год болезни: <input type="number" min="1900" max="${new Date().getFullYear()}" value="${rec.yearDisease||""}" class="h-yr-d" placeholder="ГГГГ"></label>`;
+    extra.appendChild(f);
+    f.querySelector(".h-yr-d").addEventListener("input", e=>{
+      const val = e.target.value ? parseInt(e.target.value,10) : null;
+      state.history[v.id].yearDisease = val;
+      updateStep3();
+    });
+  }
+}
+
+/* ============================================================
+   === VALIDATION / STEP UPDATES ===
+   ============================================================ */
+function updateStep1(){
+  const valid = !!(
+    state.sex &&
+    state.age >=0 && state.age <=120 &&
+    state.region && state.profession &&
+    (state.sex==="male" || (state.femaleStatus &&
+       (state.femaleStatus!=="pregnant" || state.trimester || state.pregWeek)))
+  );
+  $("#next1").disabled = !valid;
+}
+
+function updateStep2(){
+  const valid = state.splen!==null && state.smoke!==null && state.exac!==null && state.acute!==null;
+  $("#next2").disabled = !valid;
+}
+
+function updateStep3(){
+  ensureHistory();
+  $("#next3").disabled = false;
+}
+
+/* ============================================================
+   === NAVIGATION ===
+   ============================================================ */
+function goStep(n){
+  state.step = n;
+  $$(".step").forEach(s=> s.style.display = (+s.dataset.step===n)?"":"none");
+  $$(".progress .seg").forEach(seg=> seg.classList.toggle("done", +seg.dataset.seg < n || n===4));
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function updateStep(){
+  goStep(state.step);
+  if(state.step===1) updateStep1();
+  if(state.step===2) updateStep2();
+  if(state.step===3) updateStep3();
+}
+
+function resetAll(){
+  if(!confirm("Сбросить все данные и начать заново?")) return;
+  try{ localStorage.removeItem("vaccinePlan1122n"); }catch(e){}
+  state = makeDefaultState();
+  ensureHistory();
+
+  $$('input[name="sex"]').forEach(r=> r.checked=false);
+  $$('input[name="femaleStatus"]').forEach(r=> r.checked=false);
+  $$('input[name="trimester"]').forEach(r=> r.checked=false);
+  $$('input[name="splen"]').forEach(r=> r.checked=false);
+  $$('input[name="smoke"]').forEach(r=> r.checked=false);
+  $$('input[name="exac"]').forEach(r=> r.checked=false);
+  $$('input[name="acute"]').forEach(r=> r.checked=false);
+  $("#immunoCheck").checked = false;
+  $("#oncoCheck").checked = false;
+  $("#travelCheck").checked = false;
+  $("#pregWeek").value = "";
+  $("#pregHint").textContent = "";
+  $("#f-female").style.display = "none";
+  $("#f-pregnancy").style.display = "none";
+  $("#ageRange").value = 30; $("#ageNumber").value = 30;
+  $("#ageDisplay").textContent = "Возраст: 30 лет";
+  $("#regionSelect").value = "";
+  $("#professionSelect").value = "";
+  $("#regionEndemicHint").textContent = "";
+  $$("#chronicList input").forEach(i=> i.checked=false);
+  $$("#allergyList input").forEach(i=> i.checked=false);
+
+  $$("#historyList .acc").forEach(a=> a.classList.remove("filled","open"));
+  $$("#historyList .extra-fields").forEach(e=> e.innerHTML="");
+  $$("#historyList input[type=radio]").forEach(r=> r.checked=false);
+  syncHistoryRadios();
+
+  $("#warnBlock").innerHTML = "";
+  $("#summaryGrid").innerHTML = "";
+  $("#roadmapBlock").innerHTML = "";
+  $("#recSection").innerHTML = "";
+  $("#testsBlock").innerHTML = "";
+  $("#travelBlock").innerHTML = "";
+
+  state.step = 1;
+  updateStep();
+}
+
+function bindGlobal(){
+  $$('input[name="sex"]').forEach(r=> r.addEventListener("change", e=>{
+    state.sex = e.target.value;
+    $("#f-female").style.display = state.sex==="female" ? "" : "none";
+    if(state.sex!=="female"){
+      $("#f-pregnancy").style.display="none";
+      state.femaleStatus=null; state.trimester=null; state.pregWeek=null;
+    }
+    updateStep1();
+  }));
+
+  $$('input[name="femaleStatus"]').forEach(r=> r.addEventListener("change", e=>{
+    state.femaleStatus = e.target.value;
+    $("#f-pregnancy").style.display =
+      (state.sex==="female" && state.femaleStatus==="pregnant") ? "" : "none";
+    if(state.femaleStatus!=="pregnant"){ state.trimester=null; state.pregWeek=null; }
+    updateStep1();
+  }));
+  $$('input[name="trimester"]').forEach(r=> r.addEventListener("change", e=>{
+    state.trimester = e.target.value;
+    updateStep1();
+  }));
+  $("#pregWeek").addEventListener("input", e=>{
+    const v = e.target.value ? parseInt(e.target.value,10) : null;
+    state.pregWeek = v;
+    const hint = $("#pregHint");
+    if(v==null){ hint.textContent = ""; }
+    else if(v>=27 && v<=36){
+      hint.textContent = "Срок 27–36 недель — оптимальное окно для введения Адасель.";
+    }else if(v>=14){
+      hint.textContent = "Для Адасель рекомендовано 27–36 недель. Грипп можно со 2–3 триместра.";
+    }else{
+      hint.textContent = "1 триместр — живые вакцины и Адасель не рекомендуются; грипп — по решению врача.";
+    }
+    updateStep1();
+  });
+
+  const ar = $("#ageRange"), an = $("#ageNumber");
+  const syncAge = v=>{
+    v = Math.max(0, Math.min(120, parseInt(v,10)||0));
+    state.age = v;
+    ar.value = v; an.value = v;
+    $("#ageDisplay").textContent = `Возраст: ${v} ${pl(v,"год","года","лет")}`;
+    updateStep1();
+  };
+  ar.addEventListener("input", e=> syncAge(e.target.value));
+  an.addEventListener("input", e=> syncAge(e.target.value));
+
+  $("#travelCheck").addEventListener("change", e=>{ state.travel = e.target.checked; });
+
+  $("#immunoCheck").addEventListener("change", e=>{ state.immuno = e.target.checked; updateStep2(); });
+  $("#oncoCheck").addEventListener("change", e=>{ state.onco = e.target.checked; updateStep2(); });
+  $$('input[name="splen"]').forEach(r=> r.addEventListener("change", e=>{ state.splen = e.target.value; updateStep2(); }));
+  $$('input[name="smoke"]').forEach(r=> r.addEventListener("change", e=>{ state.smoke = e.target.value; updateStep2(); }));
+  $$('input[name="exac"]').forEach(r=> r.addEventListener("change", e=>{ state.exac = e.target.value; updateStep2(); }));
+  $$('input[name="acute"]').forEach(r=> r.addEventListener("change", e=>{ state.acute = e.target.value; updateStep2(); }));
+
+  $$("[data-back]").forEach(b=> b.addEventListener("click", ()=>{
+    state.step = +b.dataset.back; updateStep();
+  }));
+  $("#next1").addEventListener("click", ()=>{ state.step=2; updateStep(); });
+  $("#next2").addEventListener("click", ()=>{ state.step=3; updateStep(); });
+  $("#next3").addEventListener("click", ()=>{ runLogic(); state.step=4; updateStep(); });
+
+  $("#reset3").addEventListener("click", ()=>{
+    state.history = {};
+    ensureHistory();
+    $$("#historyList .acc").forEach(a=> a.classList.remove("filled","open"));
+    $$("#historyList .extra-fields").forEach(e=> e.innerHTML="");
+    $$("#historyList input[type=radio]").forEach(r=> r.checked=false);
+    syncHistoryRadios();
+    updateStep3();
+  });
+
+  $$("[data-reset]").forEach(b=> b.addEventListener("click", resetAll));
+
+  $("#printBtn").addEventListener("click", ()=>{
+    try{
+      buildPrintDocument();
+      window.print();
+    }catch(e){ console.error(e); alert("Не удалось сформировать печатный документ."); }
+  });
+}
+
+/* ============================================================
+   === LOGIC ===
+   ============================================================ */
+function yearNow(){ return new Date().getFullYear(); }
+function ageAllowed(v, age){ return age>=v.minAge && age<=v.maxAge; }
+
+function pregnancyStatusFor(v){
+  if(state.sex!=="female" || state.femaleStatus!=="pregnant") return "not_applicable";
+
+  const wk = state.pregWeek;
+  if(wk!=null){
+    if(v.pregnancyAllowed==="yes") return "allowed";
+    if(v.pregnancyAllowed==="no") return "contraindicated";
+    if(v.pregnancyAllowed==="trimester2+" && wk>=14) return "allowed";
+    if(v.pregnancyAllowed==="trimester2-3" && wk>=14 && wk<=40) return "allowed";
+    if(v.pregnancyAllowed==="weeks27-36" && wk>=27 && wk<=36) return "allowed";
+    return "contraindicated";
+  }
+
+  const tr = state.trimester;
+  if(v.pregnancyAllowed==="yes") return "allowed";
+  if(v.pregnancyAllowed==="no") return "contraindicated";
+  if(v.pregnancyAllowed==="trimester2+" && (tr==="2"||tr==="3")) return "allowed";
+  if(v.pregnancyAllowed==="trimester2-3" && (tr==="2"||tr==="3")) return "allowed";
+  if(v.pregnancyAllowed==="weeks27-36"){
+    return tr==="3" ? "allowed" : "contraindicated";
+  }
+  return "contraindicated";
+}
+
+const ROADMAP_WINDOWS = [
+  {key:"now",  label:"Сейчас (0–2 недели)",   sub:"можно начинать",          testWeek:0},
+  {key:"w4",   label:"Через 4 недели",        sub:"± 1 неделя",              testWeek:4},
+  {key:"w8",   label:"Через 8 недель",        sub:"± 2 недели",              testWeek:8},
+  {key:"w26",  label:"Через 6 месяцев",       sub:"± 4 недели",              testWeek:26},
+  {key:"later",label:"Позже (по интервалу)",  sub:"ревакцинация",           testWeek:999}
+];
+
+function buildRoadmap(recommendations){
+  const buckets = {};
+  ROADMAP_WINDOWS.forEach(w=> buckets[w.key] = []);
+
+  recommendations.forEach(rec=>{
+    if(rec.skip) return;
+    if(rec.urgency==="Противопоказано") return;
+    if(rec.urgency==="По усмотрению врача") return;
+    const sch = rec.vaccine.schedule || {firstWeek:0, repeats:[]};
+    const base = sch.firstWeek || 0;
+
+    if(rec.vaccine.id==="diphtheria_tetanus_pertussis" && state.sex==="female" && state.femaleStatus==="pregnant"){
+      const wk = state.pregWeek;
+      if(wk!=null){
+        const weeksLeft = Math.max(0, 27 - wk);
+        if(weeksLeft <= 2){
+          buckets["now"].push({rec, note:`Адасель, оптимально в 27–36 нед. (сейчас ${wk} нед.)`});
+        }else{
+          buckets["later"].push({rec, note:`Адасель, ориентировочно через ${weeksLeft} нед. (в 27–36 нед.)`});
+        }
+      }else{
+        buckets["later"].push({rec, note:"Адасель, оптимально в 27–36 нед. беременности"});
+      }
+      return;
+    }
+
+    if(base <= 2) buckets["now"].push({rec, note:null});
+    else if(base <= 6) buckets["w4"].push({rec, note:null});
+    else if(base <= 12) buckets["w8"].push({rec, note:null});
+    else if(base <= 30) buckets["w26"].push({rec, note:null});
+    else buckets["later"].push({rec, note:null});
+
+    (sch.repeats||[]).forEach(rep=>{
+      const w = rep.afterWeeks;
+      let key = "later";
+      if(w <= 2) key = "now";
+      else if(w <= 6) key = "w4";
+      else if(w <= 12) key = "w8";
+      else if(w <= 30) key = "w26";
+      buckets[key].push({rec, note:rep.dose});
+    });
+  });
+
+  return buckets;
+}
+
+function urgencyTag(u){
+  if(u==="Противопоказано") return `<span class="tag tag-danger">⚠ нельзя</span>`;
+  if(u==="Рекомендуется") return `<span class="tag tag-warn">рекоменд.</span>`;
+  if(u==="По усмотрению врача") return `<span class="tag tag-info">по усмотрению врача</span>`;
+  return `<span class="tag tag-ok">планово</span>`;
+}
+
+function runLogic(){
+  ensureHistory();
+  const result = {recommendations:[], warnings:[], summary:{}, travel:[], roadmap:{}};
+  try{
+    const acuteNow = state.exac==="yes" || state.acute==="yes";
+    if(acuteNow){
+      result.warnings.push("Обострение хронического заболевания / острая инфекция: отложить плановую вакцинацию до стабилизации состояния.");
+    }
+
+    const chronic = new Set(state.chronic);
+    const reg = REGIONS.find(r=>r.id===state.region);
+    const isPregnant = state.sex==="female" && state.femaleStatus==="pregnant";
+
+    VACCINE_RULES.forEach(v=>{
+      const rec = state.history[v.id] || {status:"unknown"};
+      const item = {vaccine:v, urgency:"Планово", reasons:[], analysis:null, course:null, source:v.source, notes:"", skip:false};
+
+      if(!ageAllowed(v, state.age)) return;
+      if(v.id==="bcg" && state.age>7) return;
+      if(v.id==="hpv" && (state.age<9 || state.age>45)) return;
+
+      const preg = pregnancyStatusFor(v);
+
+      if(isPregnant){
+        if(v.id==="diphtheria_tetanus_pertussis"){
+          if(preg==="allowed"){
+            item.urgency = "Рекомендуется";
+            item.reasons.push("Беременность: Адасель (дифтерия, столбняк, коклюш) однократно на сроке 27–36 недель — при каждой беременности. АДС-М при беременности не используется, т.к. не защищает от коклюша.");
+          }else{
+            item.urgency = "По усмотрению врача";
+            item.reasons.push("Беременность: Адасель оптимально в 27–36 недель; сейчас срок вне окна — обсудите с врачом.");
+          }
+        }else if(v.id==="flu"){
+          if(preg==="allowed"){
+            item.urgency = "Рекомендуется";
+            item.reasons.push("Беременность: грипп (инактивированная вакцина) рекомендуется со 2–3 триместра.");
+          }else{
+            item.urgency = "По усмотрению врача";
+            item.reasons.push("Беременность: грипп рекомендуется со 2–3 триместра; в 1 триместре — по усмотрению врача.");
+          }
+        }else if(v.id==="covid19"){
+          item.urgency = "По усмотрению врача";
+          item.reasons.push("Беременность: вакцинация против COVID-19 — по усмотрению врача.");
+        }else if(v.isLive){
+          item.urgency = "Противопоказано";
+          item.reasons.push("Беременность: живые вакцины противопоказаны. Рекомендована вакцинация вне беременности (после родов).");
+        }else{
+          item.urgency = "По усмотрению врача";
+          item.reasons.push("Беременность: инактивированная вакцина — по усмотрению врача (индивидуально). Возможна после беременности.");
+        }
+        if(v.isLive){
+          result.warnings.push(`${v.name}: противопоказана при беременности (живая вакцина). Рекомендована вакцинация вне беременности.`);
+        }
+      }else{
+        const allergyHit = v.contraindications.filter(a=> hasAllergy(a));
+        if(allergyHit.length){
+          const names = allergyHit.map(id=> (ALLERGENS.find(a=>a.id===id)||{}).name).join(", ");
+          if(v.id==="hepatitis_b" && hasAllergy("yeast")){
+            item.urgency = "Противопоказано";
+            item.reasons.push("Анафилаксия на дрожжи: рекомбинантная дрожжевая вакцина гепатита В противопоказана — обсудить с врачом альтернативу.");
+          }else if(v.id==="flu" && hasAllergy("egg")){
+            item.urgency = "Противопоказано";
+            item.reasons.push("Анафилаксия на яичный белок: вакцина, культивированная на куриных эмбрионах, не рекомендуется — обсудить с врачом альтернативу.");
+          }else{
+            item.urgency = "Противопоказано";
+            item.reasons.push(`Аллергоанамнез: ${names}. Требуется консультация врача.`);
+          }
+        }
+        if(v.isLive && (state.immuno || state.onco)){
+          item.urgency = "Противопоказано";
+          item.reasons.push("Иммунодефицит / онкология / иммуносупрессия: живые вакцины противопоказаны. Обсудите вакцинацию после стабилизации состояния.");
+        }
+        if(v.id==="flu" && item.urgency==="Планово"){
+          if(acuteNow){
+            item.urgency = "Рекомендуется";
+            item.reasons.push("Рекомендуется всем, но сейчас — отложить до стабилизации состояния.");
+          }else{
+            item.urgency = "Рекомендуется";
+            item.reasons.push("Грипп рекомендован всем при отсутствии острого заболевания / обострения.");
+          }
+        }
+        if(v.id==="covid19"){
+          const covidRisk =
+            state.age >= 60 ||
+            chronic.has("asthma_copd") || chronic.has("heart") || chronic.has("diabetes") ||
+            chronic.has("kidney") || chronic.has("hiv") ||
+            state.immuno || state.onco ||
+            v.riskGroups.includes(state.profession);
+          if(covidRisk && item.urgency==="Планово"){
+            item.urgency = "Рекомендуется";
+            item.reasons.push("COVID-19: рекомендуется по возрасту / группе риска / состоянию.");
+          }
+          if(acuteNow && item.urgency==="Рекомендуется"){
+            item.reasons.push("Сейчас — отложить до стабилизации состояния.");
+          }
+        }
+      }
+
+      if(!isPregnant){
+        const riskByDisease = [];
+        if(chronic.has("asthma_copd") || chronic.has("diabetes") || chronic.has("heart") || chronic.has("kidney") || chronic.has("hiv")){
+          if(v.id==="pneumococcus") riskByDisease.push("Хроническое заболевание / состояние риска — пневмококковая вакцинация рекомендуется.");
+        }
+        if(chronic.has("hiv") && (v.id==="meningococcus" || v.id==="hib")){
+          riskByDisease.push("ВИЧ-инфекция — вакцинация рекомендуется.");
+        }
+        if(state.splen==="yes" && ["pneumococcus","meningococcus","hib"].includes(v.id)){
+          riskByDisease.push("Спленэктомия — вакцинация рекомендуется.");
+        }
+        if(chronic.has("hepatitis_bc") && v.id==="hepatitis_a"){
+          riskByDisease.push("Хронический гепатит B/C — вакцинация против гепатита А по показаниям.");
+        }
+        if(state.smoke==="yes" && v.id==="pneumococcus"){
+          riskByDisease.push("Курение — фактор риска пневмококковой инфекции.");
+        }
+        if(riskByDisease.length && item.urgency==="Планово"){
+          item.urgency = "Рекомендуется";
+          item.reasons.push(...riskByDisease);
+        }
+      }
+
+      if(!isPregnant && v.riskGroups.includes(state.profession)){
+        if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+        item.reasons.push("Профессия входит в группу риска.");
+      }
+
+      if(!isPregnant && v.id==="tick_encephalitis" && reg && reg.endemicKE){
+        if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+        item.reasons.push("Регион проживания эндемичен по клещевому энцефалиту.");
+      }
+
+      let recStatus = rec.status;
+      if(NO_HAD_DISEASE_IDS.includes(v.id) && recStatus === "had_disease"){
+        recStatus = "unknown";
+      }
+
+      if(recStatus==="vaccinated"){
+        if(v.intervalYears && rec.year){
+          const next = rec.year + v.intervalYears;
+          if(yearNow() >= next){
+            if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+            item.reasons.push(`Интервал ${v.intervalYears} лет истёк (последняя прививка в ${rec.year} г.) — показана ревакцинация.`);
+          }else{
+            item.reasons.push(`${vaccinatedWord()} в ${rec.year} г., интервал ${v.intervalYears} лет ещё не истёк.`);
+          }
+        }else if(rec.year){
+          item.reasons.push(`${vaccinatedWord()} в ${rec.year} г.`);
+        }else{
+          item.reasons.push(`${vaccinatedWord()} (год не указан).`);
+        }
+      }else if(recStatus==="had_disease"){
+        item.skip = true;
+        item.urgency = "Планово";
+        item.reasons.push(`${hadDiseaseWord()}${rec.yearDisease?` в ${rec.yearDisease} г.`:""} — вакцинация не требуется.`);
+        result.recommendations.push(item);
+        return;
+      }else if(recStatus==="unknown"){
+        if(v.testIfUnknown){
+          item.analysis = v.testIfUnknown;
+          if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+          item.reasons.push("Статус неизвестен — рекомендован анализ перед решением о вакцинации.");
+        }else{
+          if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+          item.reasons.push("Статус неизвестен — требуется консультация врача.");
+        }
+      }else if(recStatus==="not_vaccinated"){
+        if(item.urgency==="Противопоказано"){
+          item.reasons.push("Вакцинация противопоказана в текущем состоянии. Рекомендована вакцинация после стабилизации/вне беременности.");
+        }else if(isPregnant && (v.id!=="diphtheria_tetanus_pertussis" && v.id!=="flu")){
+          item.reasons.push(`${notVaccinatedWord()}. Вакцинация возможна вне беременности / по усмотрению врача.`);
+        }else if(v.id==="diphtheria_tetanus_pertussis"){
+          if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+          item.course = "АДС-М — однократная ревакцинация, далее каждые 10 лет (дифтерия, столбняк). При беременности — Адасель (дифтерия, столбняк, коклюш) однократно на сроке 27–36 недель при каждой беременности.";
+          item.reasons.push(`${notVaccinatedWord()} — АДС-М однократно, далее ревакцинация каждые 10 лет (дифтерия, столбняк; без коклюша). При беременности — Адасель (дифтерия, столбняк, коклюш) однократно на 27–36 неделях.`);
+        }else{
+          if(item.urgency==="Планово") item.urgency = "Рекомендуется";
+          item.course = `Полный курс: ${v.dosesIfNaive} ${pl(v.dosesIfNaive,"доза","дозы","доз")}. ${v.notes||""}`;
+          item.reasons.push(`${notVaccinatedWord()} — показан полный курс по схеме.`);
+        }
+      }
+
+      if(!item.reasons.length){
+        item.reasons.push("Плановая вакцинация по национальному календарю (при отсутствии противопоказаний).");
+      }
+
+      if(item.urgency==="Противопоказано" && !isPregnant && !item.skip){
+        result.warnings.push(`${v.name}: ${item.reasons.join(" ")}`);
+      }
+
+      result.recommendations.push(item);
+    });
+
+    const rank = {"Противопоказано":0,"По усмотрению врача":1,"Рекомендуется":2,"Планово":3};
+    result.recommendations.sort((a,b)=> rank[a.urgency]-rank[b.urgency]);
+
+    result.roadmap = buildRoadmap(result.recommendations);
+
+    if(state.travel) result.travel = TRAVEL_RECOMMENDATIONS.slice();
+
+    result.summary = {
+      sex: state.sex==="male"?"Мужчина":"Женщина",
+      age: state.age,
+      region: (REGIONS.find(r=>r.id===state.region)||{}).name||"—",
+      profession: (PROFESSIONS.find(p=>p.id===state.profession)||{}).name||"—",
+      femaleStatus: state.sex==="female" ? (
+        state.femaleStatus==="pregnant" ?
+          `Беременна (${state.pregWeek?`${state.pregWeek} нед.`:`${state.trimester||"?"} триместр`})` :
+        state.femaleStatus==="lactation" ? "Лактация" : "Не беременна, не кормлю"
+      ) : null,
+      travel: state.travel ? "Да" : "Нет"
+    };
+
+    state.result = result;
+    renderResult(result);
+  }catch(e){
+    console.error("Logic error:", e);
+    result.warnings.push("Требуется консультация врача: не удалось однозначно рассчитать план.");
+    state.result = result;
+    renderResult(result);
+  }
+}
+
+/* ============================================================
+   === RENDER RESULT ===
+   ============================================================ */
+function renderResult(res){
+  const sg = $("#summaryGrid");
+  sg.innerHTML = "";
+  const s = res.summary;
+  const rows = [
+    ["Пол", s.sex], ["Возраст", s.age+" лет"],
+    ["Регион", s.region], ["Профессия", s.profession],
+    ["Женский статус", s.femaleStatus||"—"], ["Поездки", s.travel]
+  ];
+  rows.forEach(([k,v])=>{
+    const d = el("div","");
+    d.innerHTML = `<span class="k">${k}:</span> ${v}`;
+    sg.appendChild(d);
+  });
+
+  const wb = $("#warnBlock");
+  wb.innerHTML = "";
+  if(res.warnings.length){
+    const div = el("div","warn-block");
+    div.innerHTML = "<h3>⚠ Предупреждения</h3><ul>" + res.warnings.map(w=>`<li>${w}</li>`).join("") + "</ul>";
+    wb.appendChild(div);
+  }
+
+  renderRoadmap(res);
+
+  const rs = $("#recSection");
+  rs.innerHTML = "<h2>Подробные рекомендации</h2>";
+  const list = el("div","rec-list");
+  res.recommendations.forEach(rec=>{
+    if(rec.skip) return;
+    let cls = "rec-info";
+    if(rec.urgency==="Противопоказано") cls="rec-danger";
+    else if(rec.urgency==="Рекомендуется") cls="rec-warn";
+    else if(rec.urgency==="Планово") cls="rec-ok";
+    const badgeCls = rec.urgency==="Противопоказано"?"danger":
+                     rec.urgency==="Рекомендуется"?"warn":
+                     rec.urgency==="По усмотрению врача"?"warn":"ok";
+    const d = el("div","rec "+cls);
+    d.innerHTML = `
+      <div class="rec-head">
+        <span class="name">${rec.vaccine.name}</span>
+        <span class="badge ${badgeCls}">${rec.urgency}</span>
+      </div>
+      <div class="why">${rec.reasons.join(" ")}</div>
+      ${rec.analysis?`
+        <div class="analysis">
+          <span class="a-title">Рекомендован анализ перед вакцинацией</span>
+          ${rec.analysis}
+        </div>`:""}
+      ${rec.course?`<div class="extra"><b>Курс:</b> ${rec.course}</div>`:""}
+      <div class="src">Источник: ${rec.source}</div>
+    `;
+    list.appendChild(d);
+  });
+  rs.appendChild(list);
+
+  renderTestsBlock(res);
+
+  const tb = $("#travelBlock");
+  tb.innerHTML = "";
+  if(res.travel.length){
+    const div = el("div","card");
+    div.innerHTML = "<h2>Справочно при поездках</h2>" + res.travel.map(t=>`
+      <div style="margin-bottom:10px">
+        <b>${t.region}</b><br>
+        Вакцины: ${t.vaccines.join(", ")}<br>
+        <span class="small muted">${t.note}</span>
+      </div>`).join("");
+    tb.appendChild(div);
+  }
+}
+
+function renderTestsBlock(res){
+  const block = $("#testsBlock");
+  block.innerHTML = "";
+  const items = [];
+  res.recommendations.forEach(rec=>{
+    if(rec.skip) return;
+    if(rec.urgency==="Противопоказано") return;
+    if(!rec.analysis) return;
+    items.push(rec);
+  });
+  if(!items.length) return;
+
+  const wrap = el("div","tests-block");
+  let html = "<h3>Какие анализы сдать (статус «Не помню»)</h3><ul>";
+  items.forEach(rec=>{
+    html += `<li><b>${rec.vaccine.name}</b> — ${rec.analysis}</li>`;
+  });
+  html += "</ul>";
+  html += `<p class="small muted">Анализы помогают врачу решить, нужна ли вакцинация. Результат покажите врачу перед прививкой.</p>`;
+  wrap.innerHTML = html;
+  block.appendChild(wrap);
+}
+
+function renderRoadmap(res){
+  const block = $("#roadmapBlock");
+  block.innerHTML = "<h2>Карта вакцинации (ориентировочные сроки)</h2>";
+
+  const acuteNow = state.exac==="yes" || state.acute==="yes";
+  if(acuteNow){
+    block.appendChild(el("p","small muted",
+      "Острое заболевание / обострение: начните карту после стабилизации состояния. " +
+      "Ниже — ориентировочные окна, отсчёт с момента стабилизации."
+    ));
+  }
+
+  const buckets = res.roadmap || {};
+  const tl = el("div","timeline");
+
+  const windows = ROADMAP_WINDOWS.filter(w=>{
+    return buckets[w.key] && buckets[w.key].length > 0;
+  });
+
+  if(!windows.length){
+    block.appendChild(el("p","small muted","Нет активных рекомендаций для карты. См. подробные рекомендации ниже."));
+    return;
+  }
+
+  windows.forEach(w=>{
+    const items = buckets[w.key];
+    const byVacc = {};
+    items.forEach(it=>{
+      const id = it.rec.vaccine.id;
+      if(!byVacc[id]) byVacc[id] = {rec: it.rec, notes: []};
+      if(it.note) byVacc[id].notes.push(it.note);
+    });
+
+    const tlItem = el("div","tl-item " + (w.key==="now"?"now": w.key==="later"?"far":"later"));
+    const dotLabel = w.key==="now" ? "0" : w.key==="w4" ? "4н" : w.key==="w8" ? "8н" : w.key==="w26" ? "6м" : ">";
+    tlItem.innerHTML = `
+      <div class="tl-dot">${dotLabel}</div>
+      <div class="tl-body">
+        <div class="tl-when">${w.label} <span class="when-sub">${w.sub}</span></div>
+        <ul class="tl-list">
+          ${Object.values(byVacc).map(({rec,notes})=>`
+            <li>
+              ${urgencyTag(rec.urgency)}
+              <b>${rec.vaccine.name}</b>
+              ${notes.length?`<span class="muted small">— ${notes.join("; ")}</span>`:""}
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    tl.appendChild(tlItem);
+  });
+  block.appendChild(tl);
+
+  block.appendChild(el("p","small muted",
+    "Сроки ориентировочные: отсчёт от сегодняшней даты. Точную дату введения определяет врач с учётом состояния. " +
+    "Живые вакцины (корь/краснуха/паротит/ветряная оспа) в один день или с интервалом ≥ 1 месяц; " +
+    "между АДС-М и Адасель — ≥ 1 год."
+  ));
+}
+
+/* ============================================================
+   === PRINT DOCUMENT ===
+   ============================================================ */
+function buildPrintDocument(){
+  const res = state.result;
+  if(!res){ alert("Сначала рассчитайте план."); return; }
+  const root = $("#printPlan");
+  root.innerHTML = "";
+
+  const today = new Date().toLocaleDateString("ru-RU");
+
+  const head = el("div","p-block");
+  head.innerHTML = `
+    <h1>Индивидуальный план вакцинации</h1>
+    <div class="p-header">
+      Дата формирования: ${today}<br>
+      Основа: ${ORDER.title} (актуально на ${ORDER.actual})<br>
+      Сформировано автоматически. Не является медицинским заключением.
+    </div>`;
+  root.appendChild(head);
+
+  const s = res.summary;
+  const p = el("div","p-block");
+  p.innerHTML = `<h2>Данные пациента</h2>
+    <table>
+      <tr><th>Пол</th><td>${s.sex}</td></tr>
+      <tr><th>Возраст</th><td>${s.age} лет</td></tr>
+      <tr><th>Регион</th><td>${s.region}</td></tr>
+      <tr><th>Профессия (группа риска)</th><td>${s.profession}</td></tr>
+      ${state.sex==="female"?`<tr><th>Женский статус</th><td>${s.femaleStatus}</td></tr>`:""}
+      <tr><th>Планирует поездки</th><td>${s.travel}</td></tr>
+    </table>`;
+  root.appendChild(p);
+
+  const an = el("div","p-block");
+  let anRows = "";
+  if(state.chronic.length){
+    anRows += `<tr><th>Хронические заболевания</th><td>${state.chronic.map(id=>CHRONIC.find(c=>c.id===id).name).join("; ")}</td></tr>`;
+  }
+  if(state.immuno) anRows += `<tr><th>Иммунодефицит / иммуносупрессия</th><td>Да</td></tr>`;
+  if(state.onco) anRows += `<tr><th>Онкология / химиотерапия / лучевая терапия</th><td>Да</td></tr>`;
+  if(state.splen==="yes") anRows += `<tr><th>Спленэктомия</th><td>Да</td></tr>`;
+  if(state.smoke==="yes") anRows += `<tr><th>Курение</th><td>Да</td></tr>`;
+  if(state.allergy.length){
+    const names = state.allergy.map(id=> (ALLERGENS.find(a=>a.id===id)||{}).name).filter(Boolean).join("; ");
+    anRows += `<tr><th>Аллергоанамнез</th><td>${names}</td></tr>`;
+  }
+  if(state.exac==="yes") anRows += `<tr><th>Обострение хронического заболевания</th><td>Да</td></tr>`;
+  if(state.acute==="yes") anRows += `<tr><th>Острая инфекция / температура</th><td>Да</td></tr>`;
+  if(!anRows) anRows = `<tr><td colspan="2">— (не отмечено)</td></tr>`;
+  an.innerHTML = `<h2>Анамнез</h2><table>${anRows}</table>`;
+  root.appendChild(an);
+
+  const va = el("div","p-block");
+  let vRows = "";
+  VACCINE_RULES.forEach(v=>{
+    const r = state.history[v.id];
+    if(!r || !r.status) return;
+    const statusLabel = STATUS_OPTIONS.find(o=>o.id===r.status).label;
+    let year = "—";
+    let comment = "";
+    if(r.status==="vaccinated"){ year = r.year?String(r.year):"—"; }
+    if(r.status==="had_disease"){
+      if(v.id!=="varicella") year = r.yearDisease?String(r.yearDisease):"—";
+      comment = "Переболел(а) — вакцинация не требуется";
+    }
+    if(r.status==="unknown"){ comment = v.testIfUnknown?`Рекомендован анализ: ${v.testIfUnknown}`:"Требуется консультация врача"; }
+    if(r.status==="not_vaccinated"){
+      comment = (v.id==="diphtheria_tetanus_pertussis")
+        ? "АДС-М — каждые 10 лет (дифтерия, столбняк). При беременности — Адасель в 27–36 нед. (дифтерия, столбняк, коклюш)."
+        : "Требуется полный курс";
+    }
+    vRows += `<tr><td>${v.name}</td><td>${statusLabel}</td><td>${year}</td><td>${comment}</td></tr>`;
+  });
+  if(!vRows) vRows = `<tr><td colspan="4">— (не заполнено)</td></tr>`;
+  va.innerHTML = `<h2>Вакцинальный анамнез</h2>
+    <table>
+      <tr><th>Вакцина</th><th>Статус</th><th>Год</th><th>Комментарий</th></tr>
+      ${vRows}
+    </table>`;
+  root.appendChild(va);
+
+  if(res.roadmap){
+    const rm = el("div","p-block");
+    let rmHtml = `<h2>Карта вакцинации (ориентировочные сроки)</h2>`;
+    ROADMAP_WINDOWS.forEach(w=>{
+      const items = res.roadmap[w.key] || [];
+      if(!items.length) return;
+      const byVacc = {};
+      items.forEach(it=>{
+        const id = it.rec.vaccine.id;
+        if(!byVacc[id]) byVacc[id] = {rec: it.rec, notes: []};
+        if(it.note) byVacc[id].notes.push(it.note);
+      });
+      rmHtml += `<p><b>${w.label}</b> (${w.sub}):</p><ul>`;
+      Object.values(byVacc).forEach(({rec,notes})=>{
+        rmHtml += `<li>${rec.vaccine.name}${notes.length?` — ${notes.join("; ")}`:""}</li>`;
+      });
+      rmHtml += `</ul>`;
+    });
+    rmHtml += `<p class="p-note">Сроки ориентировочные; точную дату введения определяет врач.</p>`;
+    rm.innerHTML = rmHtml;
+    root.appendChild(rm);
+  }
+
+  const recDiv = el("div","p-block");
+  let recRows = "";
+  res.recommendations.forEach(rec=>{
+    if(rec.skip) return;
+    const label = rec.urgency==="Противопоказано" ? "⚠ Противопоказано" : rec.urgency;
+    const basis = rec.reasons.join(" ");
+    recRows += `<tr><td>${rec.vaccine.name}</td><td class="${rec.urgency==="Противопоказано"?"p-danger":""}">${label}</td><td>${basis}</td><td>${rec.source}</td></tr>`;
+  });
+  if(!recRows) recRows = `<tr><td colspan="4">Требуется консультация врача</td></tr>`;
+  recDiv.innerHTML = `<h2>Рекомендации</h2>
+    <table>
+      <tr><th>Вакцина</th><th>Срочность</th><th>Обоснование</th><th>Источник (пункт приказа)</th></tr>
+      ${recRows}
+    </table>`;
+  root.appendChild(recDiv);
+
+  if(res.travel.length){
+    const tr = el("div","p-block");
+    tr.innerHTML = `<h2>Справочно при поездках</h2>` + res.travel.map(t=>`
+      <p><b>${t.region}</b> — ${t.vaccines.join(", ")}.<br><span class="p-note">${t.note}</span></p>`).join("");
+    root.appendChild(tr);
+  }
+
+  if(res.warnings.length){
+    const w = el("div","p-block");
+    w.innerHTML = `<h2>Предупреждения</h2>
+      <table><tr><th>Предупреждение</th></tr>
+      ${res.warnings.map(x=>`<tr><td>${x}</td></tr>`).join("")}
+      </table>`;
+    root.appendChild(w);
+  }
+
+  const q = el("div","p-block");
+  q.innerHTML = `<h2>Вопросы / заметки врача</h2>
+    ${Array(7).fill('<div class="lines"></div>').join("")}`;
+  root.appendChild(q);
+
+  const f = el("div","p-block");
+  f.innerHTML = `
+    <p class="p-note">Сервис носит информационный характер и не заменяет консультацию врача. Перед вакцинацией необходима консультация специалиста.</p>
+    <div class="sig">
+      <span>Врач: ______________________</span>
+      <span>Дата: ______________________</span>
+    </div>`;
+  root.appendChild(f);
+}
+
+/* ============================================================
+   === SELF-TESTS ===
+   ============================================================ */
+function runSelfTests(){
+  const T = [];
+  const pass = (name, cond) => T.push({name, ok:!!cond});
+  const setState = (patch)=>{
+    state = Object.assign(makeDefaultState(), patch);
+    ensureHistory();
+  };
+
+  state = makeDefaultState();
+  ensureHistory();
+  const allUnknown = VACCINE_RULES.every(v => state.history[v.id].status === "unknown");
+  pass("Test0: по умолчанию все вакцины 'Не помню'", allUnknown);
+
+  // АДС-М vs Адасель — различие по коклюшу
+  const adacelNotes = VACCINE_RULES.find(v=>v.id==="diphtheria_tetanus_pertussis").notes;
+  pass("TestA: notes — АДС-М без коклюша", /АДС-М[^.]*без коклюша/i.test(adacelNotes));
+  pass("TestA: notes — Адасель с коклюшем", /Адасель[^.]*коклюш/i.test(adacelNotes));
+  pass("TestA: notes — при беременности Адасель", /беременност/i.test(adacelNotes) && /Адасель/i.test(adacelNotes));
+
+  // Для беременной при allowed — обоснование про Адасель + коклюш
+  setState({
+    sex:"female", femaleStatus:"pregnant", trimester:"3", pregWeek:30, age:28,
+    region:"moscow", profession:"medical",
+    splen:"no", smoke:"no", exac:"no", acute:"no"
+  });
+  state.history.diphtheria_tetanus_pertussis = {status:"not_vaccinated"};
+  runLogic();
+  const adacelPreg = state.result.recommendations.find(x=>x.vaccine.id==="diphtheria_tetanus_pertussis");
+  pass("TestA: беременная — Адасель + коклюш в обосновании",
+       adacelPreg && /Адасель/i.test(adacelPreg.reasons.join(" ")) && /коклюш/i.test(adacelPreg.reasons.join(" ")));
+  pass("TestA: беременная — АДС-М без коклюша в обосновании",
+       adacelPreg && /АДС-М[^.]*коклюш/i.test(adacelPreg.reasons.join(" ")) || /не защищает от коклюша/i.test(adacelPreg.reasons.join(" ")));
+
+  // Вне беременности not_vaccinated: АДС-М — без коклюша; при беременности — Адасель с коклюшем
+  setState({
+    sex:"male", age:40, region:"moscow", profession:"other",
+    splen:"no", smoke:"no", exac:"no", acute:"no"
+  });
+  state.history.diphtheria_tetanus_pertussis = {status:"not_vaccinated"};
+  runLogic();
+  const adacelMale = state.result.recommendations.find(x=>x.vaccine.id==="diphtheria_tetanus_pertussis");
+  pass("TestA: мужчина not_vaccinated — АДС-М без коклюша + Адасель при беременности",
+       adacelMale && /АДС-М[^.]*без коклюша/i.test(adacelMale.reasons.join(" ")) &&
+                     /Адасель/i.test(adacelMale.reasons.join(" ")) &&
+                     /коклюш/i.test(adacelMale.reasons.join(" ")));
+
+  // Остальные регрессии
+  setState({
+    sex:"female", femaleStatus:"pregnant", trimester:"3", pregWeek:30, age:28,
+    region:"moscow", profession:"medical",
+    splen:"no", smoke:"no", exac:"no", acute:"no"
+  });
+  runLogic();
+  const r1 = state.result.recommendations;
+  const byId1 = Object.fromEntries(r1.map(x=>[x.vaccine.id,x]));
+  pass("Test1: беременная — грипп рекомендован", byId1.flu && byId1.flu.urgency==="Рекомендуется");
+  pass("Test1: беременная (30 нед) — Адасель рекомендован", byId1.diphtheria_tetanus_pertussis && byId1.diphtheria_tetanus_pertussis.urgency==="Рекомендуется");
+  pass("Test1: беременная — корь противопоказана", byId1.measles && byId1.measles.urgency==="Противопоказано");
+
+  setState({
+    sex:"male", age:45, region:"moscow", profession:"trade",
+    splen:"yes", smoke:"yes", exac:"no", acute:"no"
+  });
+  runLogic();
+  const r2 = state.result.recommendations.map(x=>x.vaccine.id);
+  pass("Test2: спленэктомия — пневмококк", r2.includes("pneumococcus"));
+  pass("Test2: спленэктомия — менингококк", r2.includes("meningococcus"));
+  pass("Test2: спленэктомия — Hib", r2.includes("hib"));
+
+  const fluStatuses = statusOptionsFor(VACCINE_RULES.find(v=>v.id==="flu")).map(o=>o.id);
+  const covidStatuses = statusOptionsFor(VACCINE_RULES.find(v=>v.id==="covid19")).map(o=>o.id);
+  pass("Test7: у гриппа нет варианта «Переболел(а)»", !fluStatuses.includes("had_disease"));
+  pass("Test7: у COVID-19 нет варианта «Переболел(а)»", !covidStatuses.includes("had_disease"));
+
+  const ok = T.filter(t=>t.ok).length;
+  console.group(`🧪 Self-tests: ${ok}/${T.length}`);
+  T.forEach(t=> console.log(t.ok?"✅":"❌", t.name));
+  console.groupEnd();
+}
+
+/* ============================================================
+   === BOOT ===
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
